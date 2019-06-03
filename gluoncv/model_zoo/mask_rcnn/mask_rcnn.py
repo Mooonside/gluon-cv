@@ -173,8 +173,9 @@ class MaskRCNN(FasterRCNN):
                 roi_size = (self._roi_size[0] * 2, self._roi_size[1] * 2)
             else:
                 roi_size = self._roi_size
+            self._target_roi_size = roi_size
             self.mask_target = MaskTargetGenerator(
-                self._max_batch, self._num_sample, self.num_class, roi_size)
+                self._max_batch, self._num_sample, self.num_class, self._target_roi_size)
 
     def hybrid_forward(self, F, x, gt_box=None):
         """Forward Mask RCNN network.
@@ -296,7 +297,8 @@ class MaskRCNN(FasterRCNN):
         self._clear_cached_op()
         super(MaskRCNN, self).reset_class(classes=classes, reuse_weights=reuse_weights)
         self.mask.reset_class(classes=classes, reuse_weights=reuse_weights)
-
+        self.mask_target = MaskTargetGenerator(
+            self._max_batch, self._num_sample, self.num_class, self._target_roi_size)
 
 def get_mask_rcnn(name, dataset, pretrained=False, ctx=mx.cpu(),
                   root=os.path.join('~', '.mxnet', 'models'), **kwargs):
@@ -327,6 +329,12 @@ def get_mask_rcnn(name, dataset, pretrained=False, ctx=mx.cpu(),
         from ..model_store import get_model_file
         full_name = '_'.join(('mask_rcnn', name, dataset))
         net.load_parameters(get_model_file(full_name, tag=pretrained, root=root), ctx=ctx)
+    else:
+        for v in net.collect_params().values():
+            try:
+                v.reset_ctx(ctx)
+            except ValueError:
+                pass
     return net
 
 
