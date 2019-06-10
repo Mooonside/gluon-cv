@@ -102,9 +102,10 @@ class RCNNTargetSampler(gluon.HybridBlock):
                                        F.ones_like(topk_samples) * -1, topk_samples)
 
                 # sample neg samples
-                index = F.slice_axis(index, axis=0, begin=self._max_pos, end=None)
-                mask = F.slice_axis(mask, axis=0, begin=self._max_pos, end=None)
-                ious_argmax = F.slice_axis(ious_argmax, axis=0, begin=self._max_pos, end=None)
+                # todo: remove incorrect slice
+                # index = F.slice_axis(index, axis=0, begin=self._max_pos, end=None)
+                # mask = F.slice_axis(mask, axis=0, begin=self._max_pos, end=None)
+                # ious_argmax = F.slice_axis(ious_argmax, axis=0, begin=self._max_pos, end=None)
                 # change mask: 4 neg 3 pos 0 ignore
                 mask = F.where(mask == 2, F.ones_like(mask) * 4, mask)
                 order = F.argsort(mask, is_ascend=False)
