@@ -53,6 +53,7 @@ class RPNTargetSampler(object):
         ious_max_per_anchor = np.max(ious, axis=1)
         samples = np.zeros_like(ious_max_per_anchor)
 
+        # following set each gt's best match anchor as positive, no matter whether its iou > pos_th
         # set argmax (1, num_gt)
         ious_max_per_gt = np.max(ious, axis=0, keepdims=True)
         # ious (num_anchor, num_gt) >= argmax (1, num_gt) -> mark row as positive
