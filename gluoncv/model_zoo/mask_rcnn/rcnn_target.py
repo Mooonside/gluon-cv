@@ -36,7 +36,7 @@ class MaskTargetGenerator(gluon.HybridBlock):
         rois: (B, N, 4), input proposals
         gt_masks: (B, M, H, W), input masks of full image size
         matches: (B, N), value [0, M), index to gt_label and gt_box.
-        cls_targets: (B, N), value [0, num_class), excluding background class.
+        cls_targets: (B, N), value [0, num_class + 1), including background class.
 
         Returns
         -------
@@ -68,9 +68,9 @@ class MaskTargetGenerator(gluon.HybridBlock):
         mask_targets = []
         mask_masks = []
         for roi, gt_mask, match, cls_target in zip(rois, gt_masks, matches, cls_targets):
-            # batch id = match
+            # batch id = match, padded_rois -> (N, 5)
             padded_rois = F.concat(match.reshape((-1, 1)), roi, dim=-1)
-            # pooled_mask (N, 1, MS, MS) -> (N, MS, MS)
+            # gt_mask (M, H, W) -> pooled_mask (N, 1, MS, MS) -> (N, MS, MS)
             pooled_mask = F.contrib.ROIAlign(gt_mask, padded_rois,
                                              self._mask_size, 1.0, sample_ratio=2)
             pooled_mask = pooled_mask.reshape((-3, 0, 0))

@@ -53,7 +53,7 @@ class NumPyNormalizedBoxCenterEncoder(object):
         # refs [B, M, 4], anchors [B, N, 4], samples [B, N], matches [B, N]
         ref_boxes = np.repeat(refs.reshape((refs.shape[0], 1, -1, 4)), axis=1,
                               repeats=matches.shape[1])
-        # refs [B, N, M, 4] -> [B, N, 4]
+        # refs [B, N, M, 4] -> [B, N, 4], take match bbox from ref_bboxes
         ref_boxes = \
             ref_boxes[:, range(matches.shape[1]), matches, :] \
                 .reshape(matches.shape[0], -1, 4)
@@ -179,7 +179,8 @@ class NormalizedPerClassBoxCenterEncoder(gluon.Block):
         """
         F = nd
         # refs [B, M, 4], anchors [B, N, 4], samples [B, N], matches [B, N]
-        # encoded targets [B, N, 4], masks [B, N, 4]
+        # for positive samples in samples, encoded targets [B, N, 4], masks [B, N, 4] for its match box in refs
+        # for negative and ignored samples, targets are set to 0
         targets, masks = self.class_agnostic_encoder(samples, matches, anchors, refs)
         # labels [B, M] -> [B, N, M]
         ref_labels = F.repeat(labels.reshape((0, 1, -1)), axis=1, repeats=matches.shape[1])
@@ -382,6 +383,7 @@ class SigmoidClassEncoder(object):
 
     def __call__(self, samples):
         """Encode class prediction labels for SigmoidCrossEntropy Loss.
+           set ignore class id to -1, positive to 1 and negative to 0
 
         Parameters
         ----------

@@ -156,8 +156,9 @@ class RPNTargetGenerator(gluon.Block):
             ious = np.where(invalid_mask.asnumpy(), -1.0, ious)
             samples, matches = self._sampler(ious)
 
-            # training targets for RPN
+            # training targets for RPN, positive as 1, negative as 0, ignore as -1
             cls_target, _ = self._cls_encoder(samples)
+            # encode matches to box targets, negative and ignored encodings are set to 0
             box_target, box_mask = self._box_encoder(
                 np.expand_dims(samples, axis=0), np.expand_dims(matches, axis=0),
                 np.expand_dims(anchor.asnumpy(), axis=0), np.expand_dims(bbox.asnumpy(), axis=0))

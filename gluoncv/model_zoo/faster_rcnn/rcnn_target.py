@@ -174,9 +174,9 @@ class RCNNTargetGenerator(gluon.Block):
 
         """
         with autograd.pause():
-            # cls_target (B, N)
+            # cls_target (B, N), set positive as gt_label class + 1, negative as 0, ignored as -1
             cls_target = self._cls_encoder(samples, matches, gt_label)
-            # box_target, box_weight (C, B, N, 4)
+            # box_target, box_weight (C, B, N, 4), negative and ignored bboxes are set to zero
             box_target, box_mask = self._box_encoder(
                 samples, matches, roi, gt_label, gt_box)
             # modify shapes to match predictions
