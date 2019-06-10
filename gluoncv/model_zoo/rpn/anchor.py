@@ -15,6 +15,7 @@ class RPNAnchorGenerator(gluon.HybridBlock):
         This is usually the ratio between original image size and feature map size.
     base_size : int
         The width(and height) of reference anchor box.
+        base_size * scale is the actual size used in this rpn...
     ratios : iterable of float
         The aspect ratios of anchor boxes. We expect it to be a list or tuple.
     scales : iterable of float
@@ -88,5 +89,6 @@ class RPNAnchorGenerator(gluon.HybridBlock):
             - **out**: output anchor with (1, N, 4) shape. N is the number of anchors.
 
         """
+        # only take the [h, w] of anchors, where h, w is the spatial size of x
         a = F.slice_like(anchors, x * 0, axes=(2, 3))
         return a.reshape((1, -1, 4))

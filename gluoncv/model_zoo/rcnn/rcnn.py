@@ -206,6 +206,7 @@ class RCNN(gluon.HybridBlock):
                             x, old_classes, self.classes))
                 reuse_weights = new_map
 
+        # reuse_weights = {old_idx : new_idx}
         with self.name_scope():
             old_class_pred = self.class_predictor
             old_box_pred = self.box_predictor
