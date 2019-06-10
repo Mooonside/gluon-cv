@@ -34,7 +34,7 @@ def get_color_pallete(npimg, dataset='pascal_voc'):
         out_img = Image.fromarray(npimg.astype('uint8'))
         out_img.putpalette(cityspallete)
         return out_img
-    elif dataset == 'citys':
+    elif dataset == 'coco_panoptic':
         out_img = Image.fromarray(npimg.astype('uint8'))
         out_img.putpalette(coco_panoptic_pallete)
         return out_img
