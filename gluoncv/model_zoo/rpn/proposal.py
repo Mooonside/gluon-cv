@@ -40,7 +40,7 @@ class RPNProposal(gluon.HybridBlock):
         Generate proposals. Limit to batch-size=1 in current implementation.
         """
         with autograd.pause():
-            # restore bounding boxes
+            # restore bounding boxes to corner style
             roi = self._box_decoder(bbox_pred, self._box_to_center(anchor))
 
             # clip rois to image's boundary

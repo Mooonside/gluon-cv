@@ -131,6 +131,7 @@ class RPN(gluon.HybridBlock):
                 anchor = ag(feat)
                 rpn_score, rpn_box, raw_rpn_score, raw_rpn_box = \
                     self.rpn_head(feat)
+                # decode predict rpn_box with anchor to get corner style rpn_pre
                 rpn_pre = self.region_proposer(anchor, rpn_score,
                                                rpn_box, img)
                 anchors.append(anchor)
