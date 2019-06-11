@@ -68,6 +68,7 @@ class RPN(gluon.HybridBlock):
         self._train_post_nms = max(1, train_post_nms)
         self._test_pre_nms = max(1, test_pre_nms)
         self._test_post_nms = max(1, test_post_nms)
+        self._strides = strides
         num_stages = len(scales)
         with self.name_scope():
             if self._multi_level:
